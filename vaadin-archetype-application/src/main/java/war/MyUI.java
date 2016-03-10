@@ -1,15 +1,21 @@
 package war;
 
+import java.awt.TextArea;
+
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -26,14 +32,47 @@ public class MyUI extends UI {
         layout.setMargin(true);
         setContent(layout);
 
-        Button button = new Button("Click Me");
-        button.addClickListener(new Button.ClickListener() {
+        TextField sample = new TextField();
+        sample.setImmediate(true);
+        sample.setInputPrompt("Write something");
+        sample.setMaxLength(10);
+        TextField.updateCaption(0);
+        
+        sample.addTextChangeListener(new TextChangeListener() {
             @Override
-            public void buttonClick(ClickEvent event) {
-                layout.addComponent(new Label("Thank you for clicking"));
+            public void textChange(final TextChangeEvent event) {
+                updateCaption(event.getText().length());
             }
         });
-        layout.addComponent(button);
+
+        private void updateCaption(final int textLength) {
+            final StringBuilder builder = new StringBuilder();
+            builder.append(String.valueOf(textLength));
+            if (sample.getMaxLength() >= 0) {
+                builder.append("/").append(sample.getMaxLength());
+            }
+            builder.append(" characters");
+            sample.setCaption(builder.toString());
+        }
+     
+     
+            sample.addValueChangeListener(e -> Notification.show("Value changed:",
+                    String.valueOf(e.getProperty().getValue()),
+                    Type.TRAY_NOTIFICATION));
+        
+      
+        
+        Button oneBT = new Button("Wyślij");
+        oneBT.addClickListener(new Button.ClickListener() {
+        	@Override
+        	public void buttonClick(ClickEvent event) {
+        		Notification.show("Wysłano", Type.TRAY_NOTIFICATION);
+        	}
+        });
+        
+        //layout.addComponent(textFld);
+        layout.addComponent(oneBT);
+        
 
     }
 
