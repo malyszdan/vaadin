@@ -17,6 +17,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -37,6 +38,9 @@ import com.vaadin.data.fieldgroup.FieldGroup.CommitException;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.validator.DoubleRangeValidator;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.data.validator.StringLengthValidator;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -69,8 +73,9 @@ public class MyUI extends UI {
 			cars.addAll(CarService.getInstance().getAllCars());
 			carsTable.setContainerDataSource(cars);
 			carsTable.setSelectable(true);
-			//carsTable.addListener();
-			
+			carsTable.setColumnHeaders("Marka", "Przebieg", "Dostępność",
+					"Model", "Rok Produkcji");
+			carsTable.setPageLength(carsTable.size());
 			Button removeCarButton = new Button("Usuń auto");
 			removeCarButton.addClickListener(new ClickListener() {
 				
@@ -97,19 +102,28 @@ public class MyUI extends UI {
 				}
 			});
 			
+			VerticalLayout formLayout = new VerticalLayout();
 			
 			FormLayout form = new FormLayout();
 			Car newCar = new Car();
 			FieldGroup fieldGroup = new FieldGroup(new BeanItem<Car>(newCar));
-			form.addComponent(fieldGroup.buildAndBind("Model", "model"));
-			form.addComponent(fieldGroup.buildAndBind("Przebieg", "distance"));
-			form.addComponent(fieldGroup.buildAndBind("Marka", "brand"));
-			form.addComponent(fieldGroup.buildAndBind("Dostępność", "free"));
-			form.addComponent(removeCarButton);
-			form.addComponent(changeStatusButton);
+			Field<?> model= fieldGroup.buildAndBind("Model", "model");
+			model.setRequired(true);
+			model.addValidator(new StringLengthValidator("Model w zakresie od 1 do 20 znakow",
+					1, 20, true));
+			Field<?> distance = fieldGroup.buildAndBind("Przebieg", "distance");
+			distance.setRequired(true);
+			distance.addValidator(new DoubleRangeValidator("Chcesz wypożyczyć rakiete?", 0.0, 100000000000.0));
+			Field<?> brand = fieldGroup.buildAndBind("Marka", "brand");
+			brand.setRequired(true);
+			Field<?> availability = fieldGroup.buildAndBind("Dostępność", "free");
+			availability.setRequired(true);
 			Field<?> yearField = fieldGroup.buildAndBind("Rok Produkcji", "yearProd");
 			yearField.setRequired(true);
-			form.addComponent(yearField);
+			yearField.addValidator(new IntegerRangeValidator("Czy to Wehikuł czasu? ", 1900, 2016));
+			form.addComponents(model, distance, brand, availability, yearField);
+			//form.addComponents(removeCarButton, changeStatusButton);
+			
 			Button addCarButton = new Button("Dodaj");
 			addCarButton.addClickListener(event -> {
 				
@@ -125,7 +139,8 @@ public class MyUI extends UI {
 			});
 			
 			form.addComponent(addCarButton);
-			root.addComponents(carsTable,form);
+			formLayout.addComponent(form);
+			root.addComponents(carsTable, removeCarButton, changeStatusButton, formLayout);
 			setCompositionRoot(root);
 		}
 
@@ -141,17 +156,17 @@ public class MyUI extends UI {
 		public LoginWindow() {
 
 			FormLayout formLayout = new FormLayout();
-
+			
 			final Field<?> loginField = fieldGroup.buildAndBind("Login", "name");
+			loginField.addValidator(new StringLengthValidator("Login musi być w przedziale 4-10",
+					4, 10, true));		
 			formLayout.addComponent(loginField);
-
 			Button loginButton = new Button("Zaloguj");
-
-			Field<?> passFIeld = fieldGroup.buildAndBind("Hasło", "pass");
-			formLayout.addComponent(passFIeld);
-
+			Field<?> passFIeld = fieldGroup.buildAndBind("Hasło","pass");
+			passFIeld.addValidator(new StringLengthValidator("Login musi być w przedziale 4-10",
+					4, 10, true));	
+			formLayout.addComponent(new PasswordField("Hasło", passFIeld));
 			formLayout.addComponent(loginButton);
-
 			loginButton.addClickListener(new ClickListener() {
 				
 				@Override
@@ -183,7 +198,8 @@ public class MyUI extends UI {
 		public RegisterWindow() {
 
 			VerticalLayout root = new VerticalLayout();
-			TextField passTF = new TextField();
+			PasswordField passTF = new PasswordField();
+			passTF.setMaxLength(10);
 			passTF.setCaption("Hasło");
 			TextField loginTF = new TextField();
 			loginTF.setCaption("Login");

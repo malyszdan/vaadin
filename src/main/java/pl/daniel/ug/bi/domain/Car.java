@@ -4,7 +4,7 @@ public class Car {
 
 	private String model;
 	private int yearProd;
-	private int distance;
+	private double distance;
 	private Brand brand;
 	private boolean isFree;
 		
@@ -20,7 +20,7 @@ public class Car {
 		super();
 	}
 	
-	public Car(String model, int yearProd, int distance, Brand brand) {
+	public Car(String model, int yearProd, double distance, Brand brand) {
 		super();
 		this.model = model;
 		this.yearProd = yearProd;
@@ -50,11 +50,11 @@ public class Car {
 		this.yearProd = yearProd;
 	}
 
-	public int getDistance() {
+	public double getDistance() {
 		return distance;
 	}
 
-	public void setDistance(int distance) {
+	public void setDistance(double distance) {
 		this.distance = distance;
 	}
 
