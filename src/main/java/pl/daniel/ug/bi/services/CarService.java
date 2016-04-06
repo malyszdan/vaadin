@@ -38,4 +38,10 @@ public class CarService {
 	public void addCar(Car copy) {
 		database.add(copy);
 	}
+
+
+
+	public void remove(Car car) {
+		database.remove(car);
+	}
 }

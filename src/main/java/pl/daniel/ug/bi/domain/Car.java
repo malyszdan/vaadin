@@ -26,6 +26,7 @@ public class Car {
 		this.yearProd = yearProd;
 		this.distance = distance;
 		this.brand = brand;
+		this.isFree = true;
 	}
 
 
