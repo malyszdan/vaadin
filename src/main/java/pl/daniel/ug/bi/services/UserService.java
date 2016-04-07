@@ -9,8 +9,7 @@ public class UserService {
 	
 	private List<User> userList = new ArrayList<User>();
 	
-	
-	/// Singleton
+
 	
 	private UserService() {
 		userList.add(new User("admin", "admin", "admin@anon.pl"));
@@ -32,7 +31,6 @@ public class UserService {
 	}
 
 	public void login(User user) throws BadPassEx, NoSuchUserEx{
-		
 		for(User u : userList){
 			if(u.equals(user)){
 				if (u.getPass().equals(user.getPass()))

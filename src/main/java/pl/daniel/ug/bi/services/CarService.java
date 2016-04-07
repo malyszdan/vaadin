@@ -13,12 +13,11 @@ public class CarService {
 
 	private List<Car> database = new ArrayList<Car>();
 	
-	/// Singleton
+
 	private CarService() {
-		database.add(new Car("",2010,200,Brand.BMW));
-		database.add(new Car());
-		database.add(new Car());
-		database.add(new Car());
+		database.add(new Car("E32",2010, 20000, Brand.BMW));
+		database.add(new Car("FOCUS", 2000, 150000, Brand.FORD));
+		database.add(new Car("FIESTA", 2004, 120430, Brand.FORD));
 	}
 	
 	private static CarService instance = new CarService();

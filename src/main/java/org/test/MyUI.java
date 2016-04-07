@@ -2,18 +2,21 @@ package org.test;
 
 import javax.servlet.annotation.WebServlet;
 
+import com.google.gwt.user.client.ui.Grid;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -25,6 +28,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import pl.daniel.ug.bi.domain.Car;
 import pl.daniel.ug.bi.domain.User;
+import pl.daniel.ug.bi.domain.Car.Brand;
 import pl.daniel.ug.bi.services.CarService;
 import pl.daniel.ug.bi.services.UserService;
 import pl.daniel.ug.bi.services.UserService.BadPassEx;
@@ -58,8 +62,18 @@ public class MyUI extends UI {
 
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
-
-		setContent(new HorizontalLayout(new RegisterWindow(), new LoginWindow()));
+		
+		GridLayout gird = new GridLayout(3, 2);
+		gird.setSizeFull();
+		RegisterWindow regWin = new RegisterWindow();
+		LoginWindow lgnWin = new LoginWindow();
+		gird.addComponent(regWin, 0, 0);
+		gird.setComponentAlignment(regWin, Alignment.TOP_LEFT);
+		gird.addComponent(lgnWin, 1, 0);
+		gird.setComponentAlignment(lgnWin, Alignment.TOP_RIGHT);
+		setContent(gird);
+		//setContent(new HorizontalLayout(new RegisterWindow(), new LoginWindow()));
+		
 	}
 
 	class MainView extends CustomComponent {
@@ -68,7 +82,8 @@ public class MyUI extends UI {
 
 		public MainView() {
 
-			VerticalLayout root = new VerticalLayout();
+			GridLayout root = new GridLayout(3,3);
+			root.setSizeFull();
 			
 			Table carsTable = new Table();
 			cars.addAll(CarService.getInstance().getAllCars());
@@ -102,32 +117,32 @@ public class MyUI extends UI {
 			
 			VerticalLayout formLayout = new VerticalLayout(); //add car form layout
 			FormLayout form = new FormLayout();
-			Car newCar = new Car();
+			Car newCar = new Car("");
 			FieldGroup fieldGroup = new FieldGroup(new BeanItem<Car>(newCar));
 			Field<?> model= fieldGroup.buildAndBind("Model", "model");
 			model.setRequired(true);
-			model.addValidator(new StringLengthValidator("Model w zakresie od 1 do 20 znakow",
-					1, 20, true));
 			Field<?> distance = fieldGroup.buildAndBind("Przebieg", "distance");
 			distance.setRequired(true);
-			distance.addValidator(new DoubleRangeValidator("Chcesz wypożyczyć rakiete?", 0.0, 100000000000.0));
+			distance.addValidator(new DoubleRangeValidator("Coś tu nie gra", 0.1, 100000000000.0));
 			Field<?> brand = fieldGroup.buildAndBind("Marka", "brand");
 			brand.setRequired(true);
-			Field<?> availability = fieldGroup.buildAndBind("Dostępność", "free");
-			availability.setRequired(true);
 			Field<?> yearField = fieldGroup.buildAndBind("Rok Produkcji", "yearProd");
 			yearField.setRequired(true);
 			yearField.addValidator(new IntegerRangeValidator("Czy to Wehikuł czasu? ", 1900, 2016));
-			form.addComponents(model, distance, brand, availability, yearField);
+			form.addComponents(model, distance, brand, yearField);
 		
 			Button addCarButton = new Button("Dodaj");
 			addCarButton.addClickListener(event -> {
 				
 				try {
+					distance.validate();
+					yearField.validate();
 					fieldGroup.commit();
 					CarService.getInstance().addCar(newCar.copy());
 					cars.removeAllItems();
 					cars.addAll(CarService.getInstance().getAllCars());
+				} catch(InvalidValueException e){
+					Notification.show(e.getMessage());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -174,7 +189,6 @@ public class MyUI extends UI {
 					}
 				}
 			});
-
 			setCompositionRoot(formLayout);
 		}
 
@@ -186,12 +200,18 @@ public class MyUI extends UI {
 
 			VerticalLayout root = new VerticalLayout();
 			PasswordField passTF = new PasswordField();
-			passTF.setMaxLength(10);
 			passTF.setCaption("Hasło");
+			passTF.addValidator(new StringLengthValidator(
+					"Hasło musi zawierać co najmniej 5 znaków", 5,20,true));
+			passTF.setRequired(true);
 			TextField loginTF = new TextField();
 			loginTF.setCaption("Login");
+			loginTF.setRequired(true);
+			loginTF.addValidator(new StringLengthValidator(
+					"Nazwa użytkownika musi zawierać co najmniej 5 znaków", 5,20,true));
 			TextField emailTF = new TextField();
 			emailTF.setCaption("Email");
+			emailTF.setRequired(true);
 			emailTF.addValidator(new EmailValidator("Niewłaściwy adres email. "));
 			root.addComponents(loginTF, passTF, emailTF);
 			Button newAccountButton = new Button("Nowe Konto");
@@ -200,10 +220,18 @@ public class MyUI extends UI {
 			newAccountButton.addClickListener(new ClickListener() {
 				@Override
 				public void buttonClick(ClickEvent event) {
-					UserService.getInstance().newAccout(new User(loginTF.getValue(), passTF.getValue(), emailTF.getValue()));
-					loginTF.clear();
-					passTF.clear();
-					emailTF.clear();
+					try{
+						loginTF.validate(); 
+						passTF.validate();
+						emailTF.validate();
+						UserService.getInstance().newAccout(new User(loginTF.getValue(), passTF.getValue(), emailTF.getValue()));
+						loginTF.clear();
+						passTF.clear();
+						emailTF.clear();
+						Notification.show("Konto zostało utworzone");
+					} catch(InvalidValueException e){
+						Notification.show(e.getMessage());
+					}
 				}
 			});
 			setCompositionRoot(root);

@@ -19,6 +19,9 @@ public class Car {
 	public Car() {
 		super();
 	}
+	public Car(String model){
+		this.model = "";
+	}
 	
 	public Car(String model, int yearProd, double distance, Brand brand) {
 		super();
@@ -31,7 +34,7 @@ public class Car {
 
 
 	public enum Brand {
-		BMW, AUDI;
+		AUDI, BMW, CHEVROLET, FIAT, DACIA, FORD, ŁADA, MAZDA, TOYOTA, VW;
 	}
 
 	public String getModel() {

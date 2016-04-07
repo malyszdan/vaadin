@@ -29,7 +29,7 @@ public class User {
 		this.email = email;
 	}
 
-	public String getName() {  // -> user has "name" property, name is propertyId
+	public String getName() {  // user has "name" property, name is propertyId
 		return name;
 	}
 	
