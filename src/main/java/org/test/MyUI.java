@@ -69,7 +69,7 @@ public class MyUI extends UI {
 		public MainView() {
 
 			VerticalLayout root = new VerticalLayout();
-
+			
 			Table carsTable = new Table();
 			cars.addAll(CarService.getInstance().getAllCars());
 			carsTable.setContainerDataSource(cars);
@@ -77,22 +77,19 @@ public class MyUI extends UI {
 			carsTable.setColumnHeaders("Marka", "Przebieg", "Dostępność",
 					"Model", "Rok Produkcji");
 			carsTable.setPageLength(carsTable.size());
+			
 			Button removeCarButton = new Button("Usuń auto");
-			removeCarButton.addClickListener(new ClickListener() {
-				
+			removeCarButton.addClickListener(new ClickListener() {	
 				@Override
 				public void buttonClick(ClickEvent event) {
 					 Object selectedRow = carsTable.getValue();
-					 
 					 CarService.getInstance().remove((Car) selectedRow);
 					 cars.removeItem(selectedRow);
-					 
 				}
 			});
 			
 			Button changeStatusButton = new Button("Zarezerwuj");
 			changeStatusButton.addClickListener(new ClickListener() {
-				
 				@Override
 				public void buttonClick(ClickEvent event) {
 					Object selectedRow = carsTable.getValue();
@@ -103,8 +100,7 @@ public class MyUI extends UI {
 				}
 			});
 			
-			VerticalLayout formLayout = new VerticalLayout();
-			
+			VerticalLayout formLayout = new VerticalLayout(); //add car form layout
 			FormLayout form = new FormLayout();
 			Car newCar = new Car();
 			FieldGroup fieldGroup = new FieldGroup(new BeanItem<Car>(newCar));
@@ -123,8 +119,7 @@ public class MyUI extends UI {
 			yearField.setRequired(true);
 			yearField.addValidator(new IntegerRangeValidator("Czy to Wehikuł czasu? ", 1900, 2016));
 			form.addComponents(model, distance, brand, availability, yearField);
-			//form.addComponents(removeCarButton, changeStatusButton);
-			
+		
 			Button addCarButton = new Button("Dodaj");
 			addCarButton.addClickListener(event -> {
 				
@@ -134,7 +129,6 @@ public class MyUI extends UI {
 					cars.removeAllItems();
 					cars.addAll(CarService.getInstance().getAllCars());
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			});
@@ -149,27 +143,19 @@ public class MyUI extends UI {
 
 	class LoginWindow extends CustomComponent {
 
-		private User user = new User();
-
+		private User user = new User("","","");
 		private FieldGroup fieldGroup = new FieldGroup(new BeanItem<User>(user));
 
-
 		public LoginWindow() {
-
-			FormLayout formLayout = new FormLayout();
-			
+			FormLayout formLayout = new FormLayout();			
 			final Field<?> loginField = fieldGroup.buildAndBind("Login", "name");
-			loginField.addValidator(new StringLengthValidator("Login musi być w przedziale 4-10",
-					4, 10, true));		
 			formLayout.addComponent(loginField);
 			Button loginButton = new Button("Zaloguj");
-			Field<?> passFIeld = fieldGroup.buildAndBind("Hasło","pass");
-			passFIeld.addValidator(new StringLengthValidator("Login musi być w przedziale 4-10",
-					4, 10, true));	
+			Field<?> passFIeld = fieldGroup.buildAndBind("Hasło","pass");	
 			formLayout.addComponent(new PasswordField("Hasło", passFIeld));
 			formLayout.addComponent(loginButton);
-			loginButton.addClickListener(new ClickListener() {
-				
+			
+			loginButton.addClickListener(new ClickListener() {	
 				@Override
 				public void buttonClick(ClickEvent event) {
 					try {
@@ -210,8 +196,8 @@ public class MyUI extends UI {
 			root.addComponents(loginTF, passTF, emailTF);
 			Button newAccountButton = new Button("Nowe Konto");
 			root.addComponent(newAccountButton);
+			
 			newAccountButton.addClickListener(new ClickListener() {
-
 				@Override
 				public void buttonClick(ClickEvent event) {
 					UserService.getInstance().newAccout(new User(loginTF.getValue(), passTF.getValue(), emailTF.getValue()));
