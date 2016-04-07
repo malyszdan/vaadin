@@ -39,6 +39,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.validator.DoubleRangeValidator;
+import com.vaadin.data.validator.EmailValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 
@@ -148,7 +149,7 @@ public class MyUI extends UI {
 
 	class LoginWindow extends CustomComponent {
 
-		private User user = new User("-", "-");
+		private User user = new User();
 
 		private FieldGroup fieldGroup = new FieldGroup(new BeanItem<User>(user));
 
@@ -203,17 +204,20 @@ public class MyUI extends UI {
 			passTF.setCaption("Hasło");
 			TextField loginTF = new TextField();
 			loginTF.setCaption("Login");
-			root.addComponent(loginTF);
-			root.addComponent(passTF);
+			TextField emailTF = new TextField();
+			emailTF.setCaption("Email");
+			emailTF.addValidator(new EmailValidator("Niewłaściwy adres email. "));
+			root.addComponents(loginTF, passTF, emailTF);
 			Button newAccountButton = new Button("Nowe Konto");
 			root.addComponent(newAccountButton);
 			newAccountButton.addClickListener(new ClickListener() {
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					UserService.getInstance().newAccout(new User(loginTF.getValue(), passTF.getValue()));
+					UserService.getInstance().newAccout(new User(loginTF.getValue(), passTF.getValue(), emailTF.getValue()));
 					loginTF.clear();
 					passTF.clear();
+					emailTF.clear();
 				}
 			});
 			setCompositionRoot(root);

@@ -13,7 +13,7 @@ public class UserService {
 	/// Singleton
 	
 	private UserService() {
-		userList.add(new User("admin", "admin"));
+		userList.add(new User("admin", "admin", "admin@anon.pl"));
 	}
 	
 	private static UserService instance = new UserService();

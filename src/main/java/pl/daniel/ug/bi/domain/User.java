@@ -5,16 +5,28 @@ import java.util.ArrayList;
 public class User {
 	private String name;
 	private String pass;
+	private String email;
 	
+	
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	
 	public User() {
 		super();
 	}
 
-	public User(String name, String pass) {
+	public User(String name, String pass, String email) {
 		super();
 		this.name = name;
 		this.pass = pass;
+		this.email = email;
 	}
 
 	public String getName() {  // -> user has "name" property, name is propertyId
